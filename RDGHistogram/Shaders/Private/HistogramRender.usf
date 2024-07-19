@@ -1,0 +1,55 @@
+#include "/Engine/Private/Common.ush"
+#include "HistogramCommon.usf"
+
+StructuredBuffer<uint4> Histogram;
+StructuredBuffer<uint4> HistogramMax;
+uint RenderMode; // 0 - Luminance, 1 - Red, 2 - Green, 3 - Blue, 4 - All
+
+RWTexture2D<float4> RenderTarget;
+uint2 RenderTargetSize;
+
+[numthreads(NUM_THREADS_X, NUM_THREADS_Y, 1)]
+void main(uint2 DTid : SV_DispatchThreadID)
+{
+    if (DTid.x >= RenderTargetSize.x || DTid.y >= RenderTargetSize.y)
+    {
+        return;
+    }
+    
+    uint sampleId = floor((float(DTid.x) / float(RenderTargetSize.x)) * NUM_BINS);
+    uint histogramChannelMax = max(max(HistogramMax[0].r, HistogramMax[0].g), max(HistogramMax[0].b, HistogramMax[0].a));
+    float4 histogramMax = (RenderMode != 4) ? float4(HistogramMax[0].rgba) : float4(histogramChannelMax.xxxx);
+    float4 normalizeHistogram = float4(RenderTargetSize.yyyy) / histogramMax;
+    RenderTarget[DTid].rgba = float4(0.0, 0.0, 0.0, 1.0);
+    
+    uint currentHeight = RenderTargetSize.y - DTid.y;
+    uint4 currentSample = floor(Histogram[sampleId] * normalizeHistogram);
+    
+    float4 histogramColours = float4(
+        currentHeight < currentSample.r ? 1.0 : 0.0,
+        currentHeight < currentSample.g ? 1.0 : 0.0,
+        currentHeight < currentSample.b ? 1.0 : 0.0,
+        currentHeight < currentSample.a ? 1.0 : 0.0
+    );
+    
+    if (RenderMode == 0)
+    {
+        RenderTarget[DTid].rgb = histogramColours.aaa;
+    }
+    else if (RenderMode == 1)
+    {
+        RenderTarget[DTid].r = histogramColours.r;
+    }
+    else if (RenderMode == 2)
+    {
+        RenderTarget[DTid].g = histogramColours.g;
+    }
+    else if (RenderMode == 3)
+    {
+        RenderTarget[DTid].b = histogramColours.b;
+    }
+    else if (RenderMode == 4)
+    {
+        RenderTarget[DTid].rgb = saturate((histogramColours.rgb / 2.0) + (histogramColours.a / 2.0));
+    }
+}

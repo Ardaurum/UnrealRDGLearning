@@ -1,0 +1,72 @@
+#include "/Engine/Private/Common.ush"
+
+struct MSVert
+{
+    float4 pos : SV_Position;
+    float3 color : COLOR0;
+};
+
+static float4 cubeVertices[] =
+{
+    float4(-0.5f, -0.5f, -0.5f, 1.0f),
+    float4(-0.5f, -0.5f, 0.5f, 1.0f),
+    float4(-0.5f, 0.5f, -0.5f, 1.0f),
+    float4(-0.5f, 0.5f, 0.5f, 1.0f),
+    float4(0.5f, -0.5f, -0.5f, 1.0f),
+    float4(0.5f, -0.5f, 0.5f, 1.0f),
+    float4(0.5f, 0.5f, -0.5f, 1.0f),
+    float4(0.5f, 0.5f, 0.5f, 1.0f),
+};
+
+static float3 cubeColors[] =
+{
+    float3(0.0f, 0.0f, 0.0f),
+    float3(0.0f, 0.0f, 1.0f),
+    float3(0.0f, 1.0f, 0.0f),
+    float3(0.0f, 1.0f, 1.0f),
+    float3(1.0f, 0.0f, 0.0f),
+    float3(1.0f, 0.0f, 1.0f),
+    float3(1.0f, 1.0f, 0.0f),
+    float3(1.0f, 1.0f, 1.0f)
+};
+
+static uint3 cubeIndices[] =
+{
+    uint3(1, 2, 0),
+    uint3(3, 2, 1),
+    uint3(6, 5, 4),
+    uint3(6, 7, 5),
+    uint3(5, 1, 0),
+    uint3(4, 5, 0),
+    uint3(7, 6, 2),
+    uint3(3, 7, 2),
+    uint3(6, 4, 0),
+    uint3(2, 6, 0),
+    uint3(7, 3, 1),
+    uint3(5, 7, 1)
+};
+
+float4x4 ModelViewProjection;
+
+[outputtopology("triangle")]
+[numthreads(12, 1, 1)]
+void mainMS(
+    in uint GTid : SV_GroupThreadID,
+    out vertices MSVert outVerts[8],
+    out indices uint3 outIndices[12])
+{
+    SetMeshOutputCounts(8, 12);
+    
+    if (GTid < 8)
+    {
+        outVerts[GTid].pos = mul(cubeVertices[GTid], ModelViewProjection);
+        outVerts[GTid].color = cubeColors[GTid];
+    }
+
+    outIndices[GTid] = cubeIndices[GTid];
+}
+
+float4 mainPS(in MSVert v) : SV_Target
+{
+    return float4(v.color, 1.0f);
+}

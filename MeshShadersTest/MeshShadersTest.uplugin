@@ -1,0 +1,25 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "MeshShadersTest",
+	"Description": "Testing mesh shaders together with RHI and RDG",
+	"Category": "Gameplay",
+	"CreatedBy": "Radosław Paszkowski",
+	"CreatedByURL": "https://github.com/ardaurum",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": false,
+	"IsBetaVersion": false,
+	"Installed": false,
+
+	"Modules": [
+		{
+			"Name": "MeshShadersTest",
+			"Type": "Runtime",
+			"LoadingPhase": "PostConfigInit"
+		}
+	],
+	"Plugins": []
+}

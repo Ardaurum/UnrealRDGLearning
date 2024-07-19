@@ -1,0 +1,39 @@
+#include "/Engine/Private/Common.ush"
+#include "HistogramCommon.usf"
+
+uint TileCount;
+StructuredBuffer<uint4> HistogramTileInput;
+
+RWStructuredBuffer<uint4> HistogramOutput;
+RWStructuredBuffer<uint4> HistogramMaxOutput;
+
+[numthreads(NUM_THREADS_X, 1, 1)]
+void main(uint DTid : SV_DispatchThreadID)
+{
+    if (DTid >= NUM_BINS)
+    {
+        return;
+    }
+    
+    if (DTid == 0)
+    {
+        HistogramMaxOutput[0] = uint4(0, 0, 0, 0);
+    }
+    
+    uint4 result;
+    HistogramOutput[DTid].rgba = uint4(0, 0, 0, 0);
+    for (uint i = 0; i < TileCount; ++i)
+    {
+        HistogramOutput[DTid].r += HistogramTileInput[DTid + i * NUM_BINS].r;
+        HistogramOutput[DTid].g += HistogramTileInput[DTid + i * NUM_BINS].g;
+        HistogramOutput[DTid].b += HistogramTileInput[DTid + i * NUM_BINS].b;
+        HistogramOutput[DTid].a += HistogramTileInput[DTid + i * NUM_BINS].a;
+    }
+    
+    GroupMemoryBarrierWithGroupSync();
+    
+    InterlockedMax(HistogramMaxOutput[0].r, HistogramOutput[DTid].r);
+    InterlockedMax(HistogramMaxOutput[0].g, HistogramOutput[DTid].g);
+    InterlockedMax(HistogramMaxOutput[0].b, HistogramOutput[DTid].b);
+    InterlockedMax(HistogramMaxOutput[0].a, HistogramOutput[DTid].a);
+}

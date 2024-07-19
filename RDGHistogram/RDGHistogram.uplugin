@@ -1,0 +1,25 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "RDGHistogram",
+	"Description": "Implementation of a colour histogram using RDG and compute shaders.",
+	"Category": "Gameplay",
+	"CreatedBy": "Radosław Paszkowski",
+	"CreatedByURL": "https://github.com/ardaurum",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": false,
+	"IsBetaVersion": false,
+	"Installed": false,
+
+	"Modules": [
+		{
+			"Name": "RDGHistogram",
+			"Type": "Runtime",
+			"LoadingPhase": "PostConfigInit"
+		}
+	],
+	"Plugins": []
+}

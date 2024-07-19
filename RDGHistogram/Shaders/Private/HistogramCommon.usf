@@ -1,0 +1,19 @@
+#ifndef NUM_BINS
+#define NUM_BINS 256
+#endif
+
+#ifndef TILE_SIZE_X
+#define TILE_SIZE_X 32
+#endif
+
+#ifndef TILE_SIZE_Y
+#define TILE_SIZE_Y 16
+#endif
+
+#ifndef NUM_THREADS_X
+#define NUM_THREADS_X 32
+#endif
+
+#ifndef NUM_THREADS_Y
+#define NUM_THREADS_Y 1
+#endif

@@ -1,0 +1,67 @@
+#include "/Engine/Private/Common.ush"
+#include "HistogramCommon.usf"
+
+// Input
+Texture2D InputTexture;
+uint2 TextureSize;
+
+// Output
+RWStructuredBuffer<uint4> HistogramTileOutput;
+
+// Group Shared
+groupshared uint4 SharedHistogram[NUM_BINS];
+
+// RGB to luminance
+float RGBToLuminance(float3 colour)
+{
+     // Use this equation: http://en.wikipedia.org/wiki/Luminance_(relative)
+    return dot(float3(0.2126f, 0.7152f, 0.0722f), colour);
+}
+
+// Converts colour value into a histogram bin
+inline uint ValueToBin(float value)
+{
+    return round(value * (NUM_BINS - 1.0));
+}
+
+[numthreads(TILE_SIZE_X, TILE_SIZE_Y, 1)]
+void main(
+    uint2 globalId : SV_DispatchThreadID, 
+    uint2 groupId : SV_GroupID,
+    uint2 threadId : SV_GroupThreadID
+)
+{
+    uint tilesInRow = ceil(float(TextureSize.x) / TILE_SIZE_X);
+    uint localId = threadId.x + threadId.y * TILE_SIZE_X;
+    uint tileId = groupId.x + groupId.y * tilesInRow;
+    
+    if (localId == 0)
+    {
+        for (int i = 0; i < NUM_BINS; ++i)
+        {
+            SharedHistogram[i] = 0;
+        }
+    }
+    
+    GroupMemoryBarrierWithGroupSync();
+    if (globalId.x < TextureSize.x && globalId.y < TextureSize.y)
+    {
+        float3 val = InputTexture.Load(int3(globalId.x, globalId.y, 0)).rgb;
+        InterlockedAdd(SharedHistogram[ValueToBin(val.r)].r, 1u);
+        InterlockedAdd(SharedHistogram[ValueToBin(val.g)].g, 1u);
+        InterlockedAdd(SharedHistogram[ValueToBin(val.b)].b, 1u);
+        
+        float luminance = RGBToLuminance(val);
+        InterlockedAdd(SharedHistogram[ValueToBin(luminance)].a, 1u);
+    }
+    GroupMemoryBarrierWithGroupSync();
+    
+    if (localId == 0)
+    {
+        for (uint i = 0; i < NUM_BINS; ++i)
+        {
+            uint outputIndex = tileId * NUM_BINS + i;
+            HistogramTileOutput[outputIndex] = SharedHistogram[i];
+        }
+    }
+}
