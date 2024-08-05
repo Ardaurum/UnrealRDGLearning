@@ -9,3 +9,6 @@ You can also change the visualisation type by setting `r.RDGHistogram.DisplayMod
 4 - Combined
 
 Mesh shader tests if mesh shader is supported and how to add a pass. To test it you need to create a blueprint deriving from the MeshShaderActor and then provide a RenderTarget for it. You can also edit the rotation to view the mesh shader cube model from different angles.
+
+https://github.com/user-attachments/assets/d4bb4723-239f-453e-8a34-df1f71133b71
+
