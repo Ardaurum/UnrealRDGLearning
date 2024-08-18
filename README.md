@@ -4,7 +4,7 @@
 
 To run the samples add the plugins to any Unreal project and enable them.
 
-For Histogram write vis RDGHistogramRender. This will show a histogram of the current game (before post-processing).
+For Histogram write `vis RDGHistogramRender`. This will show a histogram of the current game (before post-processing).
 You can also change the visualisation type by setting `r.RDGHistogram.DisplayMode {x}` where `{x}` is the number from 0-4 which corresponds to following modes:
 0 - Luminance  
 1 - Red  
@@ -93,6 +93,10 @@ Unreal uses _proxies_ or _views_ to communicate with the Renderer. The table bel
 | ULocalPlayer        |                      | FSceneViewState     |
 | ULightComponent     | FLightSceneProxy     | FLightSceneInfo     |
 | UMaterialInterface  | FMaterial            |                     |
+
+### Debugging Rendering Trick
+
+Apart from standard RenderDoc/NSight/Pix/etc. tools Unreal Engine give you some of their own tools to debug the rendering. A really useful thing I learned is to use `vis <TextureName>` which allows to visualise any texture registered in the render pipeline, e.g. `vis SceneColor` or `vis SceneDepthZ`.
 
 ### Additional Resources
 
