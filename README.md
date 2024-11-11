@@ -85,7 +85,7 @@ RDG tutorials go to great lengths to explain how to create shaders and how to pa
 
 Unreal uses _proxies_ or _views_ to communicate with the Renderer. The table below shows relationships between elements existing in the Engine Module to those in the Renderer Module and also on which thread they are processed.
 
-| Engine Module <br> Game Thread | Engine Module <br> Game Thread | Renderer Module <br> Render Thread |
+| Engine Module <br> Game Thread | Engine Module <br> Render Thread | Renderer Module <br> Render Thread |
 | ------------------- | -------------------- | ------------------- |
 | UWorld              |                      | FScene              |
 | UPrimitiveComponent | FPrimitiveSceneProxy | FPrimitiveSceneInfo |
